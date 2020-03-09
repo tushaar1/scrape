@@ -37,3 +37,5 @@ df = pd.DataFrame(records, columns=['name', 'price', 'release date', 'popularity
 print(df.head())
 print(df.tail())
 df.to_csv('sneaker_releases.csv', index=False, encoding='utf-8')
+
+'''see if scrapy will help with ajax '''
