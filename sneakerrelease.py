@@ -1,37 +1,32 @@
-from bs4 import BeautifulSoup
-import urllib3
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
+from urllib.request import urlopen as uReq
+from bs4 import BeautifulSoup as soup
 
-urllib3.disable_warnings()
-
-
+url = 'https://sneakernews.com/release-dates/'
 driver = webdriver.Chrome()
-driver.get('https://sneakernews.com/release-dates/')
-heights = []
-counter = 0
-records = []
-for i in range(1, 300):
-    bg = driver.find_element_by_css_selector('body')
-    time.sleep(0.1)
-    bg.send_keys(Keys.END)
-    heights.append(driver.execute_script("return document.body.scrollHeight"))
-    try:
-        bottom = heights[i - 16]
-    except:
-        pass
-    if i % 16 == 0:
-        new_bottom = heights[i - 1]
-        if bottom == new_bottom:
-            url = 'https://sneakernews.com/release-dates/'
-            http = urllib3.PoolManager()
-            response = http.request('GET', url)
+driver.get(url)
 
-            for shoe in url:
-                http = urllib3.PoolManager()
-                response = http.request('GET', url)
-                soup = BeautifulSoup(response.data.decode('utf-8'), features="lxml")
-                results = soup.find_all('span', attrs={'class': 'release-date'})
-                records.append(results)
-            print(records)
+uClient = uReq(url)  # open up a connection and grabs the webpage
+page_html = uClient.read()  # puts the content into a variable
+uClient.close()  # closes the file
+
+results = []
+page_soup = soup(page_html, 'html.parser')  # parses the html into a new variable
+
+'''release date'''
+for shoe in page_soup.find_all('span', {'class': 'release-date'}):
+    print(shoe.text)
+
+'''shoe name'''
+for shoe in page_soup.find_all('h2', {'a': ''}):
+    print(shoe.text)
+'''release price'''
+for shoe in page_soup.find_all('span', {'class': 'release-price'}):
+    print(shoe.text)
+
+'''release rating'''
+for shoe in page_soup.find_all('div', {'class': 'release-rating'}):
+    print(shoe.text)
+
